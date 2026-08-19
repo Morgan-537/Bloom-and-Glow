@@ -230,3 +230,22 @@ code {
 .auth-page p a {
   color: #d4537e;
 }
+
+.auth-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-top: -16px;
+  margin-bottom: 24px;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: #d4537e;
+  text-decoration: none;
+  margin-top: -8px;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}

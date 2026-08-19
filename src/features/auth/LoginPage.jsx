@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status, error, user } = useSelector((state) => state.auth);
+  const { status, error } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,12 +21,14 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
-      <h1>Log in</h1>
+      <h1>Welcome back</h1>
+      <p className="auth-subtitle">Log in to manage your orders and cart</p>
       <form onSubmit={handleSubmit}>
         <label>
-          Email
+          Email address
           <input
             type="email"
+            placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -41,9 +43,12 @@ export default function LoginPage() {
             required
           />
         </label>
+        <Link to="/forgot-password" className="forgot-link">
+          Forgot password?
+        </Link>
         {error && <p className="error-text">{error}</p>}
         <button type="submit" disabled={status === "loading"}>
-          {status === "loading" ? "Logging in..." : "Log in"}
+          {status === "loading" ? "Logging in..." : "Log In"}
         </button>
       </form>
       <p>
