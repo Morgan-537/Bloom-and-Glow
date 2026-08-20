@@ -1,8 +1,22 @@
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Header from './components/Header'
+import CartPage from './features/cart/CartPage'
+import CheckoutPage from './features/checkout/CheckoutPage'
+import OrderConfirmationPage from './features/order/OrderConfirmationPage'
+
 function App() {
   return (
-    <h1 className="text-3xl font-bold text-rose-600 p-8">
-      Tailwind is working 🎉
-    </h1>
+    <div className="min-h-screen bg-rose-50">
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<Navigate to="/cart" replace />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+        </Routes>
+      </main>
+    </div>
   )
 }
 
