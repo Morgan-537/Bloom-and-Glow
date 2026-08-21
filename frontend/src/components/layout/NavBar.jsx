@@ -6,7 +6,8 @@ const NAV_ITEMS = [
   { label: "Haircare", to: "/?category=Haircare" },
   { label: "Makeup", to: "/?category=Makeup" },
   { label: "Cart", to: "/cart" },
-  { label: "Account", to: "/login" },
+  { label: "Login", to: "/login" },
+  { label: "Sign Up", to: "/signup" },
 ];
 
 export default function NavBar() {
