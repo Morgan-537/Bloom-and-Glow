@@ -16,10 +16,15 @@ export default function Home() {
   const { items, searchTerm, activeCategory } = useSelector((s) => s.products);
 
   // NavBar links to /?category=Skincare etc. — sync that into productsSlice.
+  // Depend on the raw string, not the searchParams object itself: that object
+  // can be a new reference on every render even when the URL hasn't changed,
+  // which was re-firing this effect after every dispatch (including the
+  // category-pill clicks below) and immediately resetting activeCategory
+  // back to whatever the URL said.
+  const categoryFromUrl = searchParams.get("category");
   useEffect(() => {
-    const category = searchParams.get("category");
-    dispatch(setActiveCategory(category || "All"));
-  }, [searchParams, dispatch]);
+    dispatch(setActiveCategory(categoryFromUrl || "All"));
+  }, [categoryFromUrl, dispatch]);
 
   const categories = ["All", ...new Set(items.map((p) => p.category))];
 

@@ -3,7 +3,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
-import CartPage from "./features/cart/CartPage";
+import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import OrderHistory from "./pages/OrderHistory";
@@ -22,7 +22,7 @@ export default function App() {
       <Route path="/signup" element={<SignUp />} />
 
       {/* Timothy — Cart & Checkout */}
-      <Route path="/cart" element={<CartPage />} />
+      <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
