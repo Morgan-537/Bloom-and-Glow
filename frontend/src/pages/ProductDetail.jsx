@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -32,23 +31,37 @@ export default function ProductDetail() {
   const inStock = product.stock > 0;
 
   function handleAddToCart() {
-    dispatch(addItem({ productId: product.id, name: product.name, price: product.price, quantity: qty }));
+    dispatch(
+      addItem({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: qty,
+      })
+    );
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }
 
   return (
     <Layout>
+      {/* Breadcrumb Navigation */}
       <div style={{ padding: "18px 48px 0", fontSize: 13, color: "var(--color-gray)" }}>
-        <Link to="/" style={{ color: "var(--color-gray)", textDecoration: "none" }}>Shop</Link>
+        <Link to="/" style={{ color: "var(--color-gray)", textDecoration: "none" }}>
+          Shop
+        </Link>
         {" / "}
-        <Link to={`/?category=${product.category}`} style={{ color: "var(--color-gray)", textDecoration: "none" }}>
+        <Link
+          to={`/?category=${product.category}`}
+          style={{ color: "var(--color-gray)", textDecoration: "none" }}
+        >
           {product.category}
         </Link>
         {" / "}
         <span style={{ color: "var(--color-dark)" }}>{product.name}</span>
       </div>
 
+      {/* Product Details Grid */}
       <div
         style={{
           display: "grid",
@@ -58,10 +71,20 @@ export default function ProductDetail() {
           maxWidth: 1100,
         }}
       >
+        {/* Left Column: Product Image */}
         <Card style={{ padding: 0, aspectRatio: "1 / 1", background: "var(--color-img-placeholder)" }} />
 
+        {/* Right Column: Information & Controls */}
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--color-primary)", marginBottom: 8 }}>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              color: "var(--color-primary)",
+              marginBottom: 8,
+            }}
+          >
             {product.category.toUpperCase()}
           </div>
           <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 10px" }}>{product.name}</h1>
@@ -91,14 +114,14 @@ export default function ProductDetail() {
           >
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
-              style={{ width: 38, height: 38, border: "none", background: "var(--color-white)", fontSize: 16 }}
+              style={{ width: 38, height: 38, border: "none", background: "var(--color-white)", fontSize: 16, cursor: "pointer" }}
             >
               −
             </button>
             <span style={{ width: 42, textAlign: "center", fontSize: 14, fontWeight: 600 }}>{qty}</span>
             <button
               onClick={() => setQty((q) => Math.min(product.stock, q + 1))}
-              style={{ width: 38, height: 38, border: "none", background: "var(--color-white)", fontSize: 16 }}
+              style={{ width: 38, height: 38, border: "none", background: "var(--color-white)", fontSize: 16, cursor: "pointer" }}
             >
               +
             </button>
@@ -120,16 +143,6 @@ export default function ProductDetail() {
             </p>
           </div>
         </div>
-
-import Layout from "../components/layout/Layout";
-
-// Owned by Elvis (feature/shop-elvis) — Figma frame "04 - Product Detail".
-export default function ProductDetail() {
-  return (
-    <Layout>
-      <div style={{ padding: 80, textAlign: "center", color: "var(--color-gray)" }}>
-        Product Detail page — Elvis's section
-
       </div>
     </Layout>
   );

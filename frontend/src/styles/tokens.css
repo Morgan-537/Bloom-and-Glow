@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* Core palette - matches the Figma "Beauty Shop" wireframes exactly */
   --color-primary: #bf4a6b;
