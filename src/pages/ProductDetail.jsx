@@ -57,7 +57,20 @@ export default function ProductDetail() {
           maxWidth: 1100,
         }}
       >
-        <Card style={{ padding: 0, aspectRatio: "1 / 1", background: "var(--color-img-placeholder)" }} />
+        <Card
+          style={{
+            padding: 0,
+            aspectRatio: "1 / 1",
+            background: "var(--color-img-placeholder)",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={product.image}
+            alt={product.name}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </Card>
 
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--color-primary)", marginBottom: 8 }}>

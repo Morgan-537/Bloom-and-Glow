@@ -8,7 +8,7 @@ import Badge from "../components/ui/Badge";
 import { setSearchTerm, setActiveCategory } from "../features/products/productsSlice";
 import { addItem } from "../features/cart/cartSlice";
 
-// Owned by Elvis (feature/shop-elvis) — Figma frame "03 - Home & Product Listing"
+
 export default function Home() {
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ export default function Home() {
   useEffect(() => {
     const category = searchParams.get("category");
     dispatch(setActiveCategory(category || "All"));
-  }, [searchParams, dispatch]);
+  }, [searchParams.get("category"), dispatch]);
 
   const categories = ["All", ...new Set(items.map((p) => p.category))];
 
@@ -68,7 +68,7 @@ export default function Home() {
         />
       </div>
 
-      {/* Category pills */}
+      {/* Category  */}
       <div style={{ display: "flex", gap: 10, padding: "18px 48px 0", flexWrap: "wrap" }}>
         {categories.map((cat) => (
           <button
@@ -116,8 +116,15 @@ export default function Home() {
                 position: "relative",
                 aspectRatio: "1 / 1",
                 background: "var(--color-img-placeholder)",
+                overflow: "hidden",
               }}
             >
+              <img
+                src={product.image}
+                alt={product.name}
+                loading="lazy"
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
               {product.status !== "Active" && (
                 <div style={{ position: "absolute", top: 10, left: 10 }}>
                   <Badge tone={product.status === "Out of Stock" ? "danger" : "pending"}>

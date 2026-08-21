@@ -2,6 +2,7 @@ export const mockProducts = [
   {
     id: 1,
     name: "Rose Facial Serum",
+    image: "https://images.unsplash.com/photo-1747303969063-3b90bcb3942e?auto=format&fit=crop&w=600&q=80",
     category: "Skincare",
     price: 24.0,
     stock: 42,
@@ -12,6 +13,7 @@ export const mockProducts = [
   {
     id: 2,
     name: "Hydrating Day Cream",
+    image: "https://images.pexels.com/photos/13794471/pexels-photo-13794471.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Skincare",
     price: 18.5,
     stock: 65,
@@ -22,6 +24,7 @@ export const mockProducts = [
   {
     id: 3,
     name: "Argan Hair Oil",
+    image: "https://images.pexels.com/photos/5244567/pexels-photo-5244567.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Haircare",
     price: 15.0,
     stock: 8,
@@ -32,6 +35,7 @@ export const mockProducts = [
   {
     id: 4,
     name: "Matte Lipstick - Rouge",
+    image: "https://images.pexels.com/photos/90297/pexels-photo-90297.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Makeup",
     price: 12.0,
     stock: 0,
@@ -42,6 +46,7 @@ export const mockProducts = [
   {
     id: 5,
     name: "Vitamin C Cleanser",
+    image: "https://images.pexels.com/photos/29977128/pexels-photo-29977128.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Skincare",
     price: 21.0,
     stock: 65,
@@ -52,6 +57,7 @@ export const mockProducts = [
   {
     id: 6,
     name: "Keratin Shampoo",
+    image: "https://images.pexels.com/photos/8478987/pexels-photo-8478987.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Haircare",
     price: 16.5,
     stock: 30,
@@ -62,6 +68,7 @@ export const mockProducts = [
   {
     id: 7,
     name: "Volumizing Mascara",
+    image: "https://images.pexels.com/photos/3373745/pexels-photo-3373745.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Makeup",
     price: 14.0,
     stock: 50,
@@ -72,6 +79,7 @@ export const mockProducts = [
   {
     id: 8,
     name: "Charcoal Face Mask",
+    image: "https://images.pexels.com/photos/6167443/pexels-photo-6167443.jpeg?auto=compress&cs=tinysrgb&w=600",
     category: "Skincare",
     price: 19.0,
     stock: 22,
