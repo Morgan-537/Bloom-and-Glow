@@ -39,7 +39,7 @@ function CartPage() {
                 <div className="w-16 h-16 rounded-md bg-rose-100 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">{item.name}</p>
-                  <p className="text-sm text-gray-500">{item.category}</p>
+                  <p className="text-sm text-blue-500">{item.category}</p>
                   <button
                     onClick={() => dispatch(removeItem(item.id))}
                     className="text-sm text-rose-600 hover:underline mt-1"
