@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  /* Core palette - matches the Figma "Beauty Shop" wireframes exactly */
+  --color-primary: #bf4a6b;
+  --color-primary-light: #df6e96;
+  --color-dark: #291f21;
+  --color-gray: #736b6e;
+  --color-border: #d5d1d1;
+  --color-white: #ffffff;
+  --color-gold: #bd9445;
+  --color-success: #3d8c57;
+  --color-success-bg: #dceee1;
+  --color-pending: #b37f19;
+  --color-pending-bg: #faedd4;
+  --color-danger: #c7524c;
+  --color-danger-bg: #f9e0df;
+  --color-row-alt: #fafaf9;
+  --color-img-placeholder: #e6d9dd;
+
+  /* Signature "Elate The Euge" gradient definition */
+  --gradient-primary: linear-gradient(135deg, #fbd3e9 0%, #bb377d 100%);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --shadow-card: 0 1px 3px rgba(41, 31, 33, 0.06), 0 1px 2px rgba(41, 31, 33, 0.04);
+  --shadow-card-hover: 0 16px 32px rgba(41, 31, 33, 0.16), 0 6px 12px rgba(41, 31, 33, 0.1);
+
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Page background applying Elate The Euge smoothly across viewport */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--color-dark);
+  background: linear-gradient(135deg, #fdf3f7 0%, #f8ebf1 100%) fixed; 
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Shared card look, used by <Card /> everywhere — floats above the
+   gradient and lifts on hover instead of sitting flat. */
+.card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
