@@ -72,7 +72,13 @@ export default function ProductDetail() {
         }}
       >
         {/* Left Column: Product Image */}
-        <Card style={{ padding: 0, aspectRatio: "1 / 1", background: "var(--color-img-placeholder)" }} />
+        <Card style={{ padding: 0, aspectRatio: "1 / 1", background: "var(--color-img-placeholder)", overflow: "hidden" }}>
+          <img
+            src={product.image}
+            alt={product.name}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </Card>
 
         {/* Right Column: Information & Controls */}
         <div>

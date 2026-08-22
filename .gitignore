@@ -1,0 +1,39 @@
+# Vite cache — normally lives in frontend/node_modules/.vite, but has also
+# shown up at the repo root; ignore it wherever it appears.
+.vite
+
+# In case anything is ever run from the repo root instead of frontend/.
+node_modules
+dist
+dist-ssr
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Env files — no secrets live here yet, but the planned Flask/Postgres
+# backend will need one, so this is here before it's needed.
+.env
+.env.local
+.env.*.local
+
+# Test coverage output
+coverage
+
+*.local
+
+# Editor / OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

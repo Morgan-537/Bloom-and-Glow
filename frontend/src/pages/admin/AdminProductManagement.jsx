@@ -91,7 +91,11 @@ export default function AdminProductManagement() {
             {filtered.map((p) => (
               <tr key={p.id} style={{ borderTop: "1px solid var(--color-border)" }}>
                 <td style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 6, background: "var(--color-img-placeholder)" }} />
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    style={{ width: 40, height: 40, borderRadius: 6, objectFit: "cover", background: "var(--color-img-placeholder)" }}
+                  />
                   {p.name}
                 </td>
                 <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{p.category}</td>

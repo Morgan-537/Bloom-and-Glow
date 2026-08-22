@@ -16,10 +16,24 @@
     },
     {
       "name": "Damaris",
-      "email": "osiagodamaris@gmail.com",
-      "password": "Damaris@2025",
+      "email": "damaris@example.com",
+      "password": "testpass123",
       "role": "customer",
       "id": "ZFkSJXflHI8"
+    },
+    {
+      "name": "kim",
+      "email": "kim@123",
+      "password": "kim123",
+      "role": "customer",
+      "id": "oLDHJ4j-8sQ"
+    },
+    {
+      "name": "dan",
+      "email": "dan@123",
+      "password": "dan123",
+      "role": "customer",
+      "id": "bgEybfN-Xec"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

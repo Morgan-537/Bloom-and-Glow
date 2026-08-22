@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Env files — for when the real backend needs API keys/secrets
+.env
+.env.local
+.env.*.local
+
+# Jest coverage output (npm test -- --coverage)
+coverage
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

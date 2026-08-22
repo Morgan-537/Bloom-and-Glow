@@ -2,12 +2,26 @@ import { useSelector } from "react-redux";
 import AdminLayout from "../../components/layout/AdminLayout";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
+import { selectOrderHistory } from "../../features/order/orderSlice";
 
-const STATUS_TONE = { Delivered: "success", Processing: "pending", Cancelled: "neutral" };
+const STATUS_TONE = {
+  Processing: "pending",
+  Shipped: "pending",
+  Delivered: "success",
+  Cancelled: "danger",
+};
+
+function formatDate(isoString) {
+  return new Date(isoString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default function AdminDashboard() {
   const { stats, salesTrend, topProducts } = useSelector((s) => s.admin);
-  const orders = useSelector((s) => s.orders.history);
+  const orders = useSelector(selectOrderHistory);
   const maxTrend = Math.max(...salesTrend);
 
   return (
@@ -74,17 +88,25 @@ export default function AdminDashboard() {
             </tr>
           </thead>
           <tbody>
-            {orders.slice(0, 5).map((o) => (
-              <tr key={o.id} style={{ borderTop: "1px solid var(--color-border)" }}>
-                <td style={{ padding: "14px 20px" }}>{o.id}</td>
-                <td style={{ padding: "14px 20px" }}>{o.customer}</td>
-                <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{o.date}</td>
-                <td style={{ padding: "14px 20px", fontWeight: 600 }}>${o.total.toFixed(2)}</td>
-                <td style={{ padding: "14px 20px" }}>
-                  <Badge tone={STATUS_TONE[o.status] ?? "neutral"}>{o.status}</Badge>
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ padding: "20px", color: "var(--color-gray)", textAlign: "center" }}>
+                  No orders have been placed yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.slice(0, 5).map((o) => (
+                <tr key={o.id} style={{ borderTop: "1px solid var(--color-border)" }}>
+                  <td style={{ padding: "14px 20px" }}>{o.id}</td>
+                  <td style={{ padding: "14px 20px" }}>{o.customer}</td>
+                  <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{formatDate(o.placedAt)}</td>
+                  <td style={{ padding: "14px 20px", fontWeight: 600 }}>${o.total.toFixed(2)}</td>
+                  <td style={{ padding: "14px 20px" }}>
+                    <Badge tone={STATUS_TONE[o.status] ?? "neutral"}>{o.status}</Badge>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </Card>

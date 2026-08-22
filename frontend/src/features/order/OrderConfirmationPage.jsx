@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { selectCurrentOrder } from './orderSlice'
+import { Link, useParams } from 'react-router-dom'
+import { selectCurrentOrder, selectOrderHistory } from './orderSlice'
 
 function formatPrice(amount) {
   return `$${amount.toFixed(2)}`
@@ -13,16 +13,29 @@ function formatDate(isoString) {
   })
 }
 
+// Doubles as the "just placed this order" confirmation screen (/order-confirmation,
+// reads the current order) and a past invoice viewer (/orders/:id, looks the
+// order up in history) so Order History's "View Invoice" links have somewhere
+// real to go.
 function OrderConfirmationPage() {
-  const order = useSelector(selectCurrentOrder)
+  const { id } = useParams()
+  const currentOrder = useSelector(selectCurrentOrder)
+  const orderHistory = useSelector(selectOrderHistory)
+  const order = id ? orderHistory.find((o) => o.id === id) : currentOrder
 
   if (!order) {
     return (
       <div className="max-w-2xl mx-auto px-6 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">No order to show</h1>
-        <p className="text-gray-500 mb-6">Looks like you haven't placed an order yet.</p>
-        <Link to="/cart" className="text-rose-600 font-semibold hover:underline">
-          Back to your cart
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          {id ? 'Order not found' : 'No order to show'}
+        </h1>
+        <p className="text-gray-500 mb-6">
+          {id
+            ? "We couldn't find that order in your history."
+            : "Looks like you haven't placed an order yet."}
+        </p>
+        <Link to={id ? '/orders' : '/cart'} className="text-rose-600 font-semibold hover:underline">
+          {id ? 'Back to order history' : 'Back to your cart'}
         </Link>
       </div>
     )
@@ -86,9 +99,13 @@ function OrderConfirmationPage() {
           </div>
         </div>
 
-        <div className="text-center">
-          <Link to="/cart" className="text-rose-600 font-semibold hover:underline">
+        <div className="text-center flex items-center justify-center gap-4">
+          <Link to="/" className="text-rose-600 font-semibold hover:underline">
             Continue Shopping
+          </Link>
+          <span className="text-gray-300">·</span>
+          <Link to="/orders" className="text-rose-600 font-semibold hover:underline">
+            View Order History
           </Link>
         </div>
       </div>
