@@ -20,7 +20,10 @@ function downloadCsv(filename, rows) {
 }
 
 export default function AdminReports() {
-  const products = useSelector((s) => s.admin.products);
+  // Reads the real shop catalog (same as Home/ProductDetail/Admin Product
+  // Management) instead of the old admin-only mock copy, so this count and
+  // export always match what's actually in the shop.
+  const products = useSelector((s) => s.products.items);
   const orders = useSelector(selectOrderHistory);
 
   function exportProducts() {

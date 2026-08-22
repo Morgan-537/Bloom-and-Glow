@@ -1,8 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { mockProducts } from "../../data/mockProducts";
 
+// NOTE: this used to also hold its own `products` array (seeded from the
+// same mockProducts, but a totally separate copy) with addProduct/
+// updateProduct/deleteProduct reducers. Admin Product Management and
+// Reports both read from it, which meant a product added via the admin
+// panel never actually showed up in the shop — Home/ProductDetail read
+// from productsSlice's `items`, a different array entirely. That's been
+// removed; the real catalog now lives only in productsSlice.js, and admin
+// pages read/write it via that slice's addProduct/updateProduct/
+// deleteProduct instead.
 const initialState = {
-  products: mockProducts,
   stats: {
     totalSales: 18420,
     orders: 312,
@@ -21,19 +28,7 @@ const initialState = {
 const adminSlice = createSlice({
   name: "admin",
   initialState,
-  reducers: {
-    addProduct(state, action) {
-      state.products.unshift(action.payload);
-    },
-    updateProduct(state, action) {
-      const idx = state.products.findIndex((p) => p.id === action.payload.id);
-      if (idx !== -1) state.products[idx] = { ...state.products[idx], ...action.payload };
-    },
-    deleteProduct(state, action) {
-      state.products = state.products.filter((p) => p.id !== action.payload);
-    },
-  },
+  reducers: {},
 });
 
-export const { addProduct, updateProduct, deleteProduct } = adminSlice.actions;
 export default adminSlice.reducer;

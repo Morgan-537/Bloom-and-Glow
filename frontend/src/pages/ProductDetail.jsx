@@ -11,12 +11,36 @@ import { addItem } from "../features/cart/cartSlice";
 export default function ProductDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const items = useSelector((s) => s.products.items);
+  const { items, status } = useSelector((s) => s.products);
   const product = items.find((p) => String(p.id) === id);
 
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // The catalog now loads asynchronously from json-server (see
+  // productsSlice.js), so on a fresh page load/refresh `items` can still be
+  // empty while the fetch is in flight. Without this check that briefly
+  // showed a false "Product not found" before the data arrived.
+  if (status === "idle" || status === "loading") {
+    return (
+      <Layout>
+        <div style={{ padding: 80, textAlign: "center", color: "var(--color-gray)" }}>
+          Loading product...
+        </div>
+      </Layout>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <Layout>
+        <div style={{ padding: 80, textAlign: "center", color: "var(--color-danger)" }}>
+          Could not load products. Make sure `npm run server` is running on port 4000.
+        </div>
+      </Layout>
+    );
+  }
 
   if (!product) {
     return (
@@ -31,11 +55,16 @@ export default function ProductDetail() {
   const inStock = product.stock > 0;
 
   function handleAddToCart() {
+    // Same fix as Home.jsx: cartSlice matches/updates lines by `id`, so this
+    // has to be `id` (not `productId`), and category/image ride along so
+    // the cart shows the same photo and category as this page.
     dispatch(
       addItem({
-        productId: product.id,
+        id: product.id,
         name: product.name,
+        category: product.category,
         price: product.price,
+        image: product.image,
         quantity: qty,
       })
     );
@@ -73,11 +102,13 @@ export default function ProductDetail() {
       >
         {/* Left Column: Product Image */}
         <Card style={{ padding: 0, aspectRatio: "1 / 1", background: "var(--color-img-placeholder)", overflow: "hidden" }}>
-          <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
+          {product.image && (
+            <img
+              src={product.image}
+              alt={product.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+          )}
         </Card>
 
         {/* Right Column: Information & Controls */}

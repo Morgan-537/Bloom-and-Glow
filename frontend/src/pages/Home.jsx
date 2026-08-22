@@ -13,7 +13,7 @@ export default function Home() {
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { items, searchTerm, activeCategory } = useSelector((s) => s.products);
+  const { items, searchTerm, activeCategory, status, error } = useSelector((s) => s.products);
 
   // NavBar links to /?category=Skincare etc. — sync that into productsSlice.
   // Depend on the raw string, not the searchParams object itself: that object
@@ -36,7 +36,21 @@ export default function Home() {
 
   function handleAddToCart(e, product) {
     e.stopPropagation();
-    dispatch(addItem({ productId: product.id, name: product.name, price: product.price, quantity: 1 }));
+    // Cart line items are matched/updated by `id` (see cartSlice.addItem),
+    // so this has to be `id`, not `productId` — otherwise every line lands
+    // with id: undefined and Remove/+/- end up acting on the wrong item.
+    // category + image are included so the cart (and any order built from
+    // it) can display the same photo and category shown here.
+    dispatch(
+      addItem({
+        id: product.id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        image: product.image,
+        quantity: 1,
+      })
+    );
   }
 
   return (
@@ -104,13 +118,25 @@ export default function Home() {
           padding: "28px 48px 60px",
         }}
       >
-        {filtered.length === 0 && (
+        {(status === "idle" || status === "loading") && (
+          <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--color-gray)", padding: "40px 0" }}>
+            Loading products...
+          </p>
+        )}
+
+        {status === "failed" && (
+          <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--color-danger)", padding: "40px 0" }}>
+            {error || "Could not load products. Make sure `npm run server` is running on port 4000."}
+          </p>
+        )}
+
+        {status === "succeeded" && filtered.length === 0 && (
           <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--color-gray)", padding: "40px 0" }}>
             No products match your search.
           </p>
         )}
 
-        {filtered.map((product) => (
+        {status === "succeeded" && filtered.map((product) => (
           <Card
             key={product.id}
             style={{ padding: 0, cursor: "pointer", overflow: "hidden" }}
@@ -124,12 +150,14 @@ export default function Home() {
                 overflow: "hidden",
               }}
             >
-              <img
-                src={product.image}
-                alt={product.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                loading="lazy"
-              />
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  loading="lazy"
+                />
+              )}
               {product.status !== "Active" && (
                 <div style={{ position: "absolute", top: 10, left: 10 }}>
                   <Badge tone={product.status === "Out of Stock" ? "danger" : "pending"}>

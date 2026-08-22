@@ -36,7 +36,15 @@ function CartPage() {
                 key={item.id}
                 className="flex items-center gap-4 bg-white rounded-lg border border-rose-100 p-4"
               >
-                <div className="w-16 h-16 rounded-md bg-rose-100 flex-shrink-0" />
+                <div className="w-16 h-16 rounded-md bg-rose-100 flex-shrink-0 overflow-hidden">
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">{item.name}</p>
                   <p className="text-sm text-blue-500">{item.category}</p>

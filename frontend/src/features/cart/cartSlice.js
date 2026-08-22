@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-// Seeded with the same mock items from the Figma wireframe, so the demo
-// matches the design: Subtotal $66.00 + Delivery $5.00 = Total $71.00
+// Cart starts empty — a real visitor shouldn't land on a pre-filled cart.
+// (This used to be seeded with 3 hardcoded demo items matching the Figma
+// wireframe, from before "Add to Cart" was wired up to real products. Now
+// that Home/ProductDetail dispatch real product data — including images —
+// those hardcoded items were stale leftovers with no `image` field, which
+// is why they showed a blank placeholder instead of a photo.)
 const initialState = {
-  items: [
-    { id: 'skincare-rose-serum', name: 'Rose Facial Serum', category: 'Skincare', price: 24.0, quantity: 1 },
-    { id: 'haircare-argan-oil', name: 'Argan Hair Oil', category: 'Haircare', price: 15.0, quantity: 2 },
-    { id: 'makeup-matte-lipstick', name: 'Matte Lipstick - Rouge', category: 'Makeup', price: 12.0, quantity: 1 },
-  ],
+  items: [],
   deliveryFee: 5.0,
 }
 
