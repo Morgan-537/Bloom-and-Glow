@@ -34,15 +34,19 @@ export default function AdminAnalytics() {
         Sales performance, order volume, and customer behavior
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24, marginTop: 32 }}>
+      {/* 2 columns on phones, 4 from lg up — a fixed 4-column row squeezed
+          each stat card unreadably thin below ~900px. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" style={{ marginTop: 32 }}>
         <StatCard label="Lifetime Sales" value={`$${stats.totalSales.toLocaleString()}`} />
         <StatCard label="Orders (this session)" value={orders.length} />
         <StatCard label="Revenue (this session)" value={`$${sessionRevenue.toFixed(2)}`} />
         <StatCard label="Active Customers" value={stats.activeCustomers.toLocaleString()} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: 24, marginTop: 24 }}>
-        <Card>
+      {/* Stacks to a single column below lg; the chart card takes 2 of 3
+          columns from lg up (was a fixed "1.8fr 1fr" row). */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ marginTop: 24 }}>
+        <Card className="lg:col-span-2">
           <h3 style={{ margin: "0 0 20px", fontSize: 14, fontWeight: 700 }}>Sales Trend (last 12 days)</h3>
           <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 200 }}>
             {salesTrend.map((v, i) => (

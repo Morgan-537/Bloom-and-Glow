@@ -55,10 +55,13 @@ export default function Home() {
 
   return (
     <Layout>
-      {/* Hero */}
+      {/* Hero — horizontal padding shrinks on narrow screens (px-5 md:px-12)
+          instead of always eating 48px of a 375px-wide phone. */}
       <div
+        className="px-5 md:px-12"
         style={{
-          padding: "56px 48px 44px",
+          paddingTop: 56,
+          paddingBottom: 44,
           background: "var(--gradient-primary)",
         }}
       >
@@ -71,7 +74,7 @@ export default function Home() {
       </div>
 
       {/* Search + sort controls */}
-      <div style={{ display: "flex", gap: 12, padding: "22px 48px 0", flexWrap: "wrap" }}>
+      <div className="px-5 md:px-12" style={{ display: "flex", gap: 12, paddingTop: 22, flexWrap: "wrap" }}>
         <input
           placeholder="Search products by name..."
           value={searchTerm}
@@ -88,7 +91,7 @@ export default function Home() {
       </div>
 
       {/* Category pills */}
-      <div style={{ display: "flex", gap: 10, padding: "18px 48px 0", flexWrap: "wrap" }}>
+      <div className="px-5 md:px-12" style={{ display: "flex", gap: 10, paddingTop: 18, flexWrap: "wrap" }}>
         {categories.map((cat) => (
           <button
             key={cat}
@@ -111,11 +114,13 @@ export default function Home() {
 
       {/* Product grid */}
       <div
+        className="px-5 md:px-12"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
           gap: 22,
-          padding: "28px 48px 60px",
+          paddingTop: 28,
+          paddingBottom: 60,
         }}
       >
         {(status === "idle" || status === "loading") && (

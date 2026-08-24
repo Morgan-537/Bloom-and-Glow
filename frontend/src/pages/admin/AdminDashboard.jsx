@@ -29,15 +29,19 @@ export default function AdminDashboard() {
       <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>Dashboard Overview</h1>
       <p style={{ color: "var(--color-gray)", marginTop: 8 }}>Welcome back, Admin</p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24, marginTop: 32 }}>
+      {/* 2 columns on phones, 4 from lg up — a fixed 4-column row squeezed
+          each stat card unreadably thin below ~900px. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" style={{ marginTop: 32 }}>
         <StatCard label="Total Sales" value={`$${stats.totalSales.toLocaleString()}`} />
         <StatCard label="Orders" value={stats.orders} />
         <StatCard label="Products" value={stats.products} />
         <StatCard label="Active Customers" value={stats.activeCustomers.toLocaleString()} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: 24, marginTop: 24 }}>
-        <Card>
+      {/* Stacks to a single column below lg; the chart card takes 2 of 3
+          columns from lg up (was a fixed "1.8fr 1fr" row). */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ marginTop: 24 }}>
+        <Card className="lg:col-span-2">
           <h3 style={{ margin: "0 0 20px", fontSize: 14, fontWeight: 700 }}>
             Order Volume &amp; Sales Trend (30 days)
           </h3>
@@ -79,36 +83,40 @@ export default function AdminDashboard() {
 
       <h3 style={{ marginTop: 32, marginBottom: 16, fontSize: 16, fontWeight: 700 }}>Recent Orders</h3>
       <Card style={{ padding: 0 }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr style={{ textAlign: "left", color: "var(--color-gray)", fontSize: 11 }}>
-              {["Order #", "Customer", "Date", "Total", "Status"].map((h) => (
-                <th key={h} style={{ padding: "14px 20px", fontWeight: 600 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {orders.length === 0 ? (
-              <tr>
-                <td colSpan={5} style={{ padding: "20px", color: "var(--color-gray)", textAlign: "center" }}>
-                  No orders have been placed yet.
-                </td>
+        {/* Scrolls horizontally on narrow screens instead of squeezing 5
+            columns unreadably thin or overflowing the page. */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", minWidth: 560, borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ textAlign: "left", color: "var(--color-gray)", fontSize: 11 }}>
+                {["Order #", "Customer", "Date", "Total", "Status"].map((h) => (
+                  <th key={h} style={{ padding: "14px 20px", fontWeight: 600 }}>{h}</th>
+                ))}
               </tr>
-            ) : (
-              orders.slice(0, 5).map((o) => (
-                <tr key={o.id} style={{ borderTop: "1px solid var(--color-border)" }}>
-                  <td style={{ padding: "14px 20px" }}>{o.id}</td>
-                  <td style={{ padding: "14px 20px" }}>{o.customer}</td>
-                  <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{formatDate(o.placedAt)}</td>
-                  <td style={{ padding: "14px 20px", fontWeight: 600 }}>${o.total.toFixed(2)}</td>
-                  <td style={{ padding: "14px 20px" }}>
-                    <Badge tone={STATUS_TONE[o.status] ?? "neutral"}>{o.status}</Badge>
+            </thead>
+            <tbody>
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: "20px", color: "var(--color-gray)", textAlign: "center" }}>
+                    No orders have been placed yet.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                orders.slice(0, 5).map((o) => (
+                  <tr key={o.id} style={{ borderTop: "1px solid var(--color-border)" }}>
+                    <td style={{ padding: "14px 20px" }}>{o.id}</td>
+                    <td style={{ padding: "14px 20px" }}>{o.customer}</td>
+                    <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{formatDate(o.placedAt)}</td>
+                    <td style={{ padding: "14px 20px", fontWeight: 600 }}>${o.total.toFixed(2)}</td>
+                    <td style={{ padding: "14px 20px" }}>
+                      <Badge tone={STATUS_TONE[o.status] ?? "neutral"}>{o.status}</Badge>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </AdminLayout>
   );

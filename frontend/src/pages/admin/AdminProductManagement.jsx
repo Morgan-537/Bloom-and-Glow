@@ -5,6 +5,7 @@ import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import { addProduct, updateProduct, deleteProduct } from "../../features/products/productsSlice";
+import { searchPhotos } from "../../api/unsplashApi";
 
 const STATUS_TONE = { Active: "success", "Low Stock": "pending", "Out of Stock": "danger" };
 const CATEGORIES = ["All", "Skincare", "Haircare", "Makeup"];
@@ -80,13 +81,14 @@ export default function AdminProductManagement() {
         </Button>
       </div>
 
-      <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>
         <input
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
             flex: 1,
+            minWidth: 220,
             maxWidth: 400,
             padding: "10px 14px",
             borderRadius: "var(--radius-sm)",
@@ -111,7 +113,10 @@ export default function AdminProductManagement() {
       </div>
 
       <Card style={{ padding: 0, marginTop: 20 }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        {/* Scrolls horizontally on narrow screens instead of squeezing 6
+            columns unreadably thin or overflowing the page. */}
+        <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", minWidth: 640, borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr style={{ textAlign: "left", color: "var(--color-gray)", fontSize: 11 }}>
               {["Product", "Category", "Price", "Stock", "Status", "Actions"].map((h) => (
@@ -191,6 +196,7 @@ export default function AdminProductManagement() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
       <p style={{ color: "var(--color-gray)", fontSize: 12, marginTop: 12 }}>
         Showing {filtered.length} of {products.length} products
@@ -215,6 +221,37 @@ function ProductFormModal({ initial, onCancel, onSave, serverError }) {
   const [stock, setStock] = useState(initial?.stock ?? "");
   const [image, setImage] = useState(initial?.image ?? "");
   const [error, setError] = useState("");
+
+  // Unsplash search — lets the admin pick a real product photo instead of
+  // hand-pasting an image URL. Entirely optional: the manual "Image URL"
+  // field above still works on its own, and picking a search result just
+  // fills that same field. Attribution is shown per Unsplash's API terms
+  // once a photo is picked.
+  const [unsplashQuery, setUnsplashQuery] = useState(initial?.name ?? "");
+  const [unsplashStatus, setUnsplashStatus] = useState("idle"); // idle | loading | succeeded | failed
+  const [unsplashError, setUnsplashError] = useState("");
+  const [unsplashResults, setUnsplashResults] = useState([]);
+  const [credit, setCredit] = useState(null); // { photographer, photographerUrl } | null
+
+  async function handleUnsplashSearch(e) {
+    e.preventDefault(); // this button lives inside the outer <form> — don't submit it
+    if (!unsplashQuery.trim()) return;
+    setUnsplashStatus("loading");
+    setUnsplashError("");
+    try {
+      const results = await searchPhotos(unsplashQuery.trim());
+      setUnsplashResults(results);
+      setUnsplashStatus("succeeded");
+    } catch (err) {
+      setUnsplashStatus("failed");
+      setUnsplashError(err.message);
+    }
+  }
+
+  function pickPhoto(photo) {
+    setImage(photo.regular);
+    setCredit({ photographer: photo.photographer, photographerUrl: photo.photographerUrl });
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -267,8 +304,10 @@ function ProductFormModal({ initial, onCancel, onSave, serverError }) {
           background: "var(--color-white)",
           borderRadius: "var(--radius-lg)",
           padding: 28,
-          width: 420,
+          width: 460,
           maxWidth: "100%",
+          maxHeight: "90vh",
+          overflowY: "auto",
           boxShadow: "var(--shadow-card-hover)",
         }}
       >
@@ -327,13 +366,101 @@ function ProductFormModal({ initial, onCancel, onSave, serverError }) {
         <input
           id="product-image"
           value={image}
-          onChange={(e) => setImage(e.target.value)}
+          onChange={(e) => {
+            setImage(e.target.value);
+            setCredit(null); // manual edit overrides whatever was picked from search
+          }}
           style={fieldInput}
           placeholder="https://images.unsplash.com/..."
         />
-        <p style={{ fontSize: 11, color: "var(--color-gray)", margin: "4px 0 4px" }}>
-          Paste a direct image link. Leave blank to show a placeholder in the shop.
-        </p>
+        {credit ? (
+          <p style={{ fontSize: 11, color: "var(--color-gray)", margin: "4px 0 4px" }}>
+            Photo by{" "}
+            <a href={credit.photographerUrl} target="_blank" rel="noreferrer">
+              {credit.photographer}
+            </a>{" "}
+            on Unsplash
+          </p>
+        ) : (
+          <p style={{ fontSize: 11, color: "var(--color-gray)", margin: "4px 0 4px" }}>
+            Paste a direct image link, or search Unsplash below. Leave blank to show a placeholder in the shop.
+          </p>
+        )}
+
+        <div
+          style={{
+            marginTop: 14,
+            padding: 12,
+            background: "var(--color-img-placeholder)",
+            borderRadius: "var(--radius-sm)",
+          }}
+        >
+          <label style={{ ...fieldLabel, margin: "0 0 6px" }} htmlFor="unsplash-query">
+            Search Unsplash for a photo
+          </label>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              id="unsplash-query"
+              value={unsplashQuery}
+              onChange={(e) => setUnsplashQuery(e.target.value)}
+              style={{ ...fieldInput, background: "var(--color-white)" }}
+              placeholder="e.g. facial serum bottle"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleUnsplashSearch}
+              disabled={unsplashStatus === "loading" || !unsplashQuery.trim()}
+            >
+              {unsplashStatus === "loading" ? "Searching..." : "Search"}
+            </Button>
+          </div>
+
+          {unsplashStatus === "failed" && (
+            <p style={{ fontSize: 12, color: "var(--color-danger)", margin: "8px 0 0" }}>{unsplashError}</p>
+          )}
+
+          {unsplashStatus === "succeeded" && unsplashResults.length === 0 && (
+            <p style={{ fontSize: 12, color: "var(--color-gray)", margin: "8px 0 0" }}>
+              No photos found for that search.
+            </p>
+          )}
+
+          {unsplashResults.length > 0 && unsplashStatus === "succeeded" && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: 8,
+                marginTop: 10,
+              }}
+            >
+              {unsplashResults.map((photo) => (
+                <button
+                  key={photo.id}
+                  type="button"
+                  onClick={() => pickPhoto(photo)}
+                  title={photo.alt}
+                  style={{
+                    padding: 0,
+                    border: image === photo.regular ? "2px solid var(--color-primary)" : "2px solid transparent",
+                    borderRadius: 6,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    aspectRatio: "1 / 1",
+                    background: "var(--color-white)",
+                  }}
+                >
+                  <img
+                    src={photo.thumb}
+                    alt={photo.alt}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {(error || serverError) && (
           <p style={{ fontSize: 12, color: "var(--color-danger)", margin: "10px 0 0" }}>{error || serverError}</p>

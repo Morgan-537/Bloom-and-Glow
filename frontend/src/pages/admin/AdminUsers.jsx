@@ -41,70 +41,74 @@ export default function AdminUsers() {
 
       {status === "succeeded" && (
         <Card style={{ padding: 0, marginTop: 24 }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ textAlign: "left", color: "var(--color-gray)", fontSize: 11 }}>
-                {["Name", "Email", "Role", "Status", "Actions"].map((h) => (
-                  <th key={h} style={{ padding: "14px 20px", fontWeight: 600 }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {users.length === 0 ? (
-                <tr>
-                  <td colSpan={5} style={{ padding: 20, textAlign: "center", color: "var(--color-gray)" }}>
-                    No users found.
-                  </td>
+          {/* Scrolls horizontally on narrow screens instead of squeezing 5
+              columns unreadably thin or overflowing the page. */}
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: 560, borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ textAlign: "left", color: "var(--color-gray)", fontSize: 11 }}>
+                  {["Name", "Email", "Role", "Status", "Actions"].map((h) => (
+                    <th key={h} style={{ padding: "14px 20px", fontWeight: 600 }}>
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ) : (
-                users.map((u) => (
-                  <tr key={u.id} style={{ borderTop: "1px solid var(--color-border)" }}>
-                    <td style={{ padding: "14px 20px", fontWeight: 500 }}>{u.name}</td>
-                    <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{u.email}</td>
-                    <td style={{ padding: "14px 20px" }}>
-                      <select
-                        value={u.role}
-                        onChange={(e) => dispatch(changeUserRole({ id: u.id, role: e.target.value }))}
-                        style={{
-                          padding: "6px 10px",
-                          borderRadius: "var(--radius-sm)",
-                          border: "1px solid var(--color-border)",
-                          fontSize: 12,
-                        }}
-                      >
-                        {ROLES.map((r) => (
-                          <option key={r} value={r}>
-                            {r}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td style={{ padding: "14px 20px" }}>
-                      <Badge tone={u.disabled ? "danger" : "success"}>
-                        {u.disabled ? "Disabled" : "Active"}
-                      </Badge>
-                    </td>
-                    <td style={{ padding: "14px 20px" }}>
-                      <button
-                        onClick={() => dispatch(toggleUserDisabled({ id: u.id, disabled: !u.disabled }))}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: u.disabled ? "var(--color-success)" : "var(--color-danger)",
-                          fontSize: 12,
-                          cursor: "pointer",
-                        }}
-                      >
-                        {u.disabled ? "Enable" : "Disable"}
-                      </button>
+              </thead>
+              <tbody>
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ padding: 20, textAlign: "center", color: "var(--color-gray)" }}>
+                      No users found.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.id} style={{ borderTop: "1px solid var(--color-border)" }}>
+                      <td style={{ padding: "14px 20px", fontWeight: 500 }}>{u.name}</td>
+                      <td style={{ padding: "14px 20px", color: "var(--color-gray)" }}>{u.email}</td>
+                      <td style={{ padding: "14px 20px" }}>
+                        <select
+                          value={u.role}
+                          onChange={(e) => dispatch(changeUserRole({ id: u.id, role: e.target.value }))}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: "var(--radius-sm)",
+                            border: "1px solid var(--color-border)",
+                            fontSize: 12,
+                          }}
+                        >
+                          {ROLES.map((r) => (
+                            <option key={r} value={r}>
+                              {r}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td style={{ padding: "14px 20px" }}>
+                        <Badge tone={u.disabled ? "danger" : "success"}>
+                          {u.disabled ? "Disabled" : "Active"}
+                        </Badge>
+                      </td>
+                      <td style={{ padding: "14px 20px" }}>
+                        <button
+                          onClick={() => dispatch(toggleUserDisabled({ id: u.id, disabled: !u.disabled }))}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: u.disabled ? "var(--color-success)" : "var(--color-danger)",
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {u.disabled ? "Enable" : "Disable"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </Card>
       )}
     </AdminLayout>

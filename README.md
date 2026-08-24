@@ -47,6 +47,22 @@ Then visit `http://localhost:5173`. Login, signup, and the admin Users &
 Roles page all depend on `npm run server` being up — if it isn't, you'll see
 "Could not reach the server" instead of a login error.
 
+### Optional: product photo search (Unsplash API)
+
+Admin > Products includes a "Search Unsplash for a photo" tool so an admin
+can pick a real product photo instead of pasting an image URL by hand. It's
+optional — the rest of the app works fine without it, and the Image URL
+field can still be filled in by hand. To enable it:
+
+1. Copy `frontend/.env.example` to `frontend/.env`
+2. Sign up for a free Unsplash "Demo" API key at
+   [unsplash.com/developers](https://unsplash.com/developers) (no credit
+   card required, capped at 50 requests/hour) and paste it into `.env` as
+   `VITE_UNSPLASH_ACCESS_KEY`
+3. Restart `npm run dev` — Vite only reads `.env` on startup, not on save
+
+`.env` is gitignored, so each teammate/deploy needs its own key.
+
 ### Test accounts
 
 Seeded in `db.json`:
@@ -89,9 +105,16 @@ doubles as an invoice viewer for past orders.
 **Order history** — customers can see all their past orders and reopen any
 of them as an invoice at `/orders/:id`.
 
+**Responsive layout** — the shop nav, admin sidebar, data tables, and the
+home/product-detail/dashboard/analytics/reports grids adapt from a single
+column on phones up to the full multi-column desktop layout, via Tailwind's
+`md`/`lg` breakpoints. Data tables scroll horizontally on narrow screens
+instead of squeezing columns unreadably thin.
+
 **Admin panel** (`/admin/*`, admin-role only):
 - **Dashboard** — sales/order stats, a 30-day trend chart, top products
-- **Products** — product catalog management
+- **Products** — product catalog management, including an optional Unsplash
+  photo search when adding/editing a product (see "Getting started" above)
 - **Orders** — search and filter orders, advance fulfillment status
   (Processing → Shipped → Delivered, or Cancelled)
 - **Users & Roles** — real accounts from `db.json`, with role changes and
@@ -128,6 +151,12 @@ Run `npm test` from `frontend/` to execute all of them.
 - **The backend is a mock.** `json-server` stands in for the real API for
   this phase — a Flask/Postgres backend is planned for later and will
   replace `db.json` and the current `src/api/*` calls.
+- **The deployed (Vercel) link needs a hosted backend to fully work.**
+  `src/api/*` currently points at `http://localhost:4000`, which only
+  exists on a developer's own machine. On the live URL, login, products,
+  and the admin panel can't reach any data until json-server (or its
+  replacement) is hosted somewhere public and the API base URL is updated
+  to point at it.
 
 ## Project structure
 
