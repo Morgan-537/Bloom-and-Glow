@@ -49,7 +49,9 @@ export default function AdminReports() {
         Export product and order data for accounting or strategic planning
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 32, maxWidth: 760 }}>
+      {/* Single column on phones, side-by-side from sm up — a fixed
+          "1fr 1fr" row squeezed both cards unreadably thin on a phone. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ marginTop: 32, maxWidth: 760 }}>
         <Card>
           <h3 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 700 }}>Product Catalog Report</h3>
           <p style={{ color: "var(--color-gray)", fontSize: 13, marginBottom: 20 }}>

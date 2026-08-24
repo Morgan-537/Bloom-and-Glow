@@ -33,14 +33,29 @@
       "email": "dan@123",
       "password": "dan123",
       "role": "customer",
-      "id": "bgEybfN-Xec"
+      "id": "bgEybfN-Xec",
+      "disabled": true
     },
     {
       "name": "timothy",
       "email": "timothy@gmail.com",
       "password": "timoh123",
-      "role": "customer",
+      "role": "admin",
       "id": "T-dqIZRTA0k"
+    },
+    {
+      "name": "elvis",
+      "email": "elvis@gmail.com",
+      "password": "elvis123",
+      "role": "customer",
+      "id": "Acc2FMxvOvA"
+    },
+    {
+      "name": "june",
+      "email": "june@gmail.com",
+      "password": "june123",
+      "role": "customer",
+      "id": "q2jLw1OQxg4"
     }
   ],
   "products": [
@@ -99,8 +114,8 @@
       "name": "Keratin Shampoo",
       "category": "Haircare",
       "price": 16.5,
-      "stock": 30,
-      "status": "Active",
+      "stock": 9,
+      "status": "Low Stock",
       "image": "https://images.unsplash.com/photo-1701992678972-d5a053ad0fb0?w=600&h=600&fit=crop&auto=format&q=80",
       "description": "A keratin-infused shampoo that strengthens strands and smooths texture."
     },
@@ -119,8 +134,8 @@
       "name": "Charcoal Face Mask",
       "category": "Skincare",
       "price": 19,
-      "stock": 22,
-      "status": "Active",
+      "stock": 3,
+      "status": "Low Stock",
       "image": "https://images.unsplash.com/photo-1760860992928-221d73c4c0cc?w=600&h=600&fit=crop&auto=format&q=80",
       "description": "A deep-cleansing charcoal mask that draws out impurities and refines pores."
     },
@@ -132,6 +147,33 @@
       "status": "Active",
       "image": "https://orewa.co.ke/wp-content/uploads/2026/05/ORS-HAIRestore-Hair-Mayonnaise-454G.png",
       "id": "TKRMKnWR2Ak"
+    },
+    {
+      "name": "Philips 1000 Series Wet and Dry Electric Shaver S1151/00",
+      "category": "Haircare",
+      "price": 15.2,
+      "stock": 23,
+      "status": "Active",
+      "image": "https://gemhomeaccesories.com/cdn/shop/files/rn-image_picker_lib_temp_f62d644c-79af-4253-8d38-74eeb25266c8.png?v=1781616272&width=713",
+      "id": "PQ5kIIyfIFw"
+    },
+    {
+      "name": "Shaving Cream Tube Refreshing for All Skin Types, 5.2 oz",
+      "category": "Haircare",
+      "price": 134,
+      "stock": 123,
+      "status": "Active",
+      "image": "https://proraso-usa.com/cdn/shop/files/400510_shavecreamtube_refresh__with_box.jpg?v=1730743603&width=600",
+      "id": "8eZfkC64KX0"
+    },
+    {
+      "name": "facial serum",
+      "category": "Skincare",
+      "price": 6.34,
+      "stock": 283,
+      "status": "Active",
+      "image": "https://images.unsplash.com/photo-1773700596401-61bc77e0b436?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxNzIwfDB8MXxzZWFyY2h8M3x8ZmFjaWFsJTIwc2VydW0lMjBib3R0bGV8ZW58MHwyfHx8MTc4NzU2OTMxM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "id": "64zk88-AA7w"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

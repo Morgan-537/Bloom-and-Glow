@@ -75,7 +75,7 @@ export default function ProductDetail() {
   return (
     <Layout>
       {/* Breadcrumb Navigation */}
-      <div style={{ padding: "18px 48px 0", fontSize: 13, color: "var(--color-gray)" }}>
+      <div className="px-5 md:px-12" style={{ paddingTop: 18, fontSize: 13, color: "var(--color-gray)" }}>
         <Link to="/" style={{ color: "var(--color-gray)", textDecoration: "none" }}>
           Shop
         </Link>
@@ -90,15 +90,12 @@ export default function ProductDetail() {
         <span style={{ color: "var(--color-dark)" }}>{product.name}</span>
       </div>
 
-      {/* Product Details Grid */}
+      {/* Product Details Grid — stacks to a single column below the md
+          breakpoint; the fixed "1fr 1fr" layout used to squeeze the image
+          and details into unreadably narrow columns on a phone. */}
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 56,
-          padding: "28px 48px 64px",
-          maxWidth: 1100,
-        }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 px-5 md:px-12"
+        style={{ paddingTop: 28, paddingBottom: 64, maxWidth: 1100 }}
       >
         {/* Left Column: Product Image */}
         <Card style={{ padding: 0, aspectRatio: "1 / 1", background: "var(--color-img-placeholder)", overflow: "hidden" }}>
