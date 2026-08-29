@@ -1,8 +1,11 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AdminLayout from "../../components/layout/AdminLayout";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
-import { selectOrderHistory } from "../../features/order/orderSlice";
+import { selectOrderHistory, loadOrders } from "../../features/order/orderSlice";
+import { loadProducts } from "../../features/products/productsSlice";
+import { loadUsers, selectUsers } from "../../features/admin/usersSlice";
 
 const STATUS_TONE = {
   Processing: "pending",
@@ -20,26 +23,68 @@ function formatDate(isoString) {
 }
 
 export default function AdminDashboard() {
-  const { stats, salesTrend, topProducts } = useSelector((s) => s.admin);
+  const dispatch = useDispatch();
   const orders = useSelector(selectOrderHistory);
-  const maxTrend = Math.max(...salesTrend);
+  const products = useSelector((s) => s.products.items);
+  const users = useSelector(selectUsers);
+
+  // This page used to rely on some other admin page having already
+  // dispatched loadOrders()/loadUsers() earlier in the session (it only
+  // read the shared Redux state, never fetched anything itself). If
+  // Dashboard was the first admin page visited, Recent Orders and Active
+  // Customers would silently show stale/empty data. Fetching here too
+  // makes the page self-sufficient regardless of navigation order.
+  useEffect(() => {
+    dispatch(loadOrders());
+    dispatch(loadProducts());
+    dispatch(loadUsers());
+  }, [dispatch]);
+
+  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+  const activeCustomers = users.filter((u) => u.role === "customer" && !u.disabled).length;
+
+  // Order Volume & Sales Trend (30 days) — real orders bucketed by the day
+  // they were placed. With only a couple of test orders so far, most bars
+  // will legitimately read $0 — that's correct, not a bug.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const last30Days = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (29 - i));
+    return d;
+  });
+  const salesTrend = last30Days.map((day) => {
+    const dayKey = day.toDateString();
+    return orders
+      .filter((o) => o.placedAt && new Date(o.placedAt).toDateString() === dayKey)
+      .reduce((sum, o) => sum + o.total, 0);
+  });
+  const maxTrend = Math.max(1, ...salesTrend);
+
+  // Top Performing Products — replaced with real units sold, since the
+  // backend has no page-view tracking to back a "views" number.
+  const productTotals = orders.reduce((acc, o) => {
+    o.items.forEach((item) => {
+      const key = item.name || "Unknown product";
+      acc[key] = (acc[key] || 0) + item.quantity;
+    });
+    return acc;
+  }, {});
+  const topProducts = Object.entries(productTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([name, qty]) => ({ name, qty }));
 
   return (
     <AdminLayout>
       <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>Dashboard Overview</h1>
       <p style={{ color: "var(--color-gray)", marginTop: 8 }}>Welcome back, Admin</p>
-
-      {/* 2 columns on phones, 4 from lg up — a fixed 4-column row squeezed
-          each stat card unreadably thin below ~900px. */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" style={{ marginTop: 32 }}>
-        <StatCard label="Total Sales" value={`$${stats.totalSales.toLocaleString()}`} />
-        <StatCard label="Orders" value={stats.orders} />
-        <StatCard label="Products" value={stats.products} />
-        <StatCard label="Active Customers" value={stats.activeCustomers.toLocaleString()} />
+        <StatCard label="Total Sales" value={`$${totalRevenue.toFixed(2)}`} />
+        <StatCard label="Orders" value={orders.length} />
+        <StatCard label="Products" value={products.length} />
+        <StatCard label="Active Customers" value={activeCustomers.toLocaleString()} />
       </div>
-
-      {/* Stacks to a single column below lg; the chart card takes 2 of 3
-          columns from lg up (was a fixed "1.8fr 1fr" row). */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ marginTop: 24 }}>
         <Card className="lg:col-span-2">
           <h3 style={{ margin: "0 0 20px", fontSize: 14, fontWeight: 700 }}>
@@ -49,42 +94,45 @@ export default function AdminDashboard() {
             {salesTrend.map((v, i) => (
               <div
                 key={i}
-                title={`Day ${i + 1}: ${v}`}
+                title={`${last30Days[i].toLocaleDateString()}: $${v.toFixed(2)}`}
                 style={{
                   flex: 1,
                   height: `${(v / maxTrend) * 100}%`,
                   background: "var(--gradient-primary)",
                   borderRadius: 4,
+                  minHeight: v > 0 ? 4 : 0,
                 }}
               />
             ))}
           </div>
         </Card>
-
         <Card>
           <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700 }}>Top Performing Products</h3>
-          {topProducts.map((p, i) => (
-            <div
-              key={p.name}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-                borderBottom: i < topProducts.length - 1 ? "1px solid var(--color-border)" : "none",
-                fontSize: 13,
-              }}
-            >
-              <span>{i + 1}. {p.name}</span>
-              <span style={{ color: "var(--color-gray)" }}>{p.views} views</span>
-            </div>
-          ))}
+          {topProducts.length === 0 ? (
+            <p style={{ color: "var(--color-gray)", fontSize: 13, margin: 0 }}>
+              No orders placed yet — place an order to see this fill in.
+            </p>
+          ) : (
+            topProducts.map((p, i) => (
+              <div
+                key={p.name}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "10px 0",
+                  borderBottom: i < topProducts.length - 1 ? "1px solid var(--color-border)" : "none",
+                  fontSize: 13,
+                }}
+              >
+                <span>{i + 1}. {p.name}</span>
+                <span style={{ color: "var(--color-gray)" }}>{p.qty} sold</span>
+              </div>
+            ))
+          )}
         </Card>
       </div>
-
       <h3 style={{ marginTop: 32, marginBottom: 16, fontSize: 16, fontWeight: 700 }}>Recent Orders</h3>
       <Card style={{ padding: 0 }}>
-        {/* Scrolls horizontally on narrow screens instead of squeezing 5
-            columns unreadably thin or overflowing the page. */}
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", minWidth: 560, borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
