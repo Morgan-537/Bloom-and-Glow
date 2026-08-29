@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import { loadProducts } from "./features/products/productsSlice";
+import { restoreSession } from "./features/auth/authSlice";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
@@ -25,12 +26,13 @@ function AdminRoute({ children }) {
 export default function App() {
   const dispatch = useDispatch();
 
-  // Single bootstrap point for the shop catalog — now fetched from
-  // db.json via json-server (see productsSlice.js) instead of always
-  // being pre-seeded from mockProducts.js. Home, ProductDetail, and the
-  // Admin Products/Reports pages all read from the same state this fills.
+  // Single bootstrap point for the shop catalog — fetched from the real
+  // backend (see productsSlice.js). Also restores a logged-in session from
+  // a saved JWT (see authSlice.js's restoreSession) so refreshing the page
+  // doesn't silently log the user out.
   useEffect(() => {
     dispatch(loadProducts());
+    dispatch(restoreSession());
   }, [dispatch]);
 
   return (

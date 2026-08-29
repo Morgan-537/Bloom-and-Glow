@@ -1,13 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginRequest, registerRequest } from "../../api/authApi";
+import { loginRequest, registerRequest, meRequest } from "../../api/authApi";
+import { getToken, setToken } from "../../api/client";
 
-// Backed by db.json via json-server (see authApi.js) — run `npm run server`
-// (from frontend/) alongside `npm run dev` or these will fail to reach the
-// mock backend. Real JWT auth against the Flask API comes later.
-
-// db.json stores each user's display name as "name"; the rest of the app
-// (NavBar, etc.) expects "fullName" on the auth user object, so normalize
-// here rather than touching every consumer.
+// Talks to the real Flask backend (see api/authApi.js). The backend's
+// User.to_dict() returns "name", not "fullName" — the rest of the app
+// (NavBar, etc.) expects "fullName", so normalize here rather than
+// touching every consumer.
 function normalizeUser(user) {
   return {
     id: user.id,
@@ -17,14 +15,6 @@ function normalizeUser(user) {
   };
 }
 
-function toErrorMessage(err) {
-  if (err instanceof TypeError) {
-    // fetch() throws a bare TypeError when it can't reach the server at all.
-    return "Could not reach the server. Make sure `npm run server` is running on port 4000.";
-  }
-  return err.message;
-}
-
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
@@ -32,7 +22,7 @@ export const login = createAsyncThunk(
       const { user, token } = await loginRequest(email, password);
       return { user: normalizeUser(user), token };
     } catch (err) {
-      return rejectWithValue(toErrorMessage(err));
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -44,13 +34,32 @@ export const register = createAsyncThunk(
       const { user, token } = await registerRequest({ name, email, password });
       return { user: normalizeUser(user), token };
     } catch (err) {
-      return rejectWithValue(toErrorMessage(err));
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// Rehydrates the logged-in user from a token already saved in
+// localStorage — dispatched once on app boot (see App.jsx) so a page
+// refresh doesn't silently log the user out even though their token is
+// still valid.
+export const restoreSession = createAsyncThunk(
+  "auth/restoreSession",
+  async (_, { rejectWithValue }) => {
+    const token = getToken();
+    if (!token) return rejectWithValue(null);
+    try {
+      const user = await meRequest();
+      return { user: normalizeUser(user), token };
+    } catch (err) {
+      setToken(null); // stored token is invalid/expired — clear it
+      return rejectWithValue(err.message);
     }
   }
 );
 
 const initialState = {
-  user: null, // { id, fullName, email, roleId }
+  user: null,
   token: null,
   status: "idle", // idle | loading | succeeded | failed
   error: null,
@@ -60,17 +69,12 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginSuccess(state, action) {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.status = "succeeded";
-      state.error = null;
-    },
     logout(state) {
       state.user = null;
       state.token = null;
       state.status = "idle";
       state.error = null;
+      setToken(null);
     },
   },
   extraReducers: (builder) => {
@@ -102,9 +106,19 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || action.error.message;
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        // No valid session to restore — stay logged out, not an error the
+        // user needs to see.
+        state.status = "idle";
       });
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

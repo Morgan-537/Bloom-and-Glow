@@ -1,8 +1,9 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AdminLayout from "../../components/layout/AdminLayout";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
-import { selectOrderHistory } from "../../features/order/orderSlice";
+import { selectOrderHistory, loadOrders } from "../../features/order/orderSlice";
 
 function downloadCsv(filename, rows) {
   const csv = rows
@@ -20,11 +21,16 @@ function downloadCsv(filename, rows) {
 }
 
 export default function AdminReports() {
+  const dispatch = useDispatch();
   // Reads the real shop catalog (same as Home/ProductDetail/Admin Product
-  // Management) instead of the old admin-only mock copy, so this count and
+  // Management) instead of an old admin-only mock copy, so this count and
   // export always match what's actually in the shop.
   const products = useSelector((s) => s.products.items);
   const orders = useSelector(selectOrderHistory);
+
+  useEffect(() => {
+    dispatch(loadOrders());
+  }, [dispatch]);
 
   function exportProducts() {
     const rows = [
@@ -49,8 +55,6 @@ export default function AdminReports() {
         Export product and order data for accounting or strategic planning
       </p>
 
-      {/* Single column on phones, side-by-side from sm up — a fixed
-          "1fr 1fr" row squeezed both cards unreadably thin on a phone. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ marginTop: 32, maxWidth: 760 }}>
         <Card>
           <h3 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 700 }}>Product Catalog Report</h3>
@@ -65,7 +69,7 @@ export default function AdminReports() {
         <Card>
           <h3 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 700 }}>Order History Report</h3>
           <p style={{ color: "var(--color-gray)", fontSize: 13, marginBottom: 20 }}>
-            {orders.length} orders placed this session.
+            {orders.length} orders in the system.
           </p>
           <Button variant="gradient" onClick={exportOrders} disabled={orders.length === 0}>
             Export CSV
