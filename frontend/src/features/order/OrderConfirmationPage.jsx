@@ -1,6 +1,7 @@
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
-import { selectCurrentOrder, selectOrderHistory } from './orderSlice'
+import { selectCurrentOrder, selectOrderHistory, loadOrderById } from './orderSlice'
 
 function formatPrice(amount) {
   return `$${amount.toFixed(2)}`
@@ -13,15 +14,23 @@ function formatDate(isoString) {
   })
 }
 
-// Doubles as the "just placed this order" confirmation screen (/order-confirmation,
-// reads the current order) and a past invoice viewer (/orders/:id, looks the
-// order up in history) so Order History's "View Invoice" links have somewhere
-// real to go.
+// Doubles as the "just placed this order" confirmation screen
+// (/order-confirmation, reads currentOrder already in memory from checkout —
+// no fetch needed) and a past invoice viewer (/orders/:id, fetches that
+// order directly from the backend so it works even on a fresh page
+// load/refresh, not only when navigated to from Order History).
 function OrderConfirmationPage() {
   const { id } = useParams()
+  const dispatch = useDispatch()
   const currentOrder = useSelector(selectCurrentOrder)
   const orderHistory = useSelector(selectOrderHistory)
   const order = id ? orderHistory.find((o) => o.id === id) : currentOrder
+
+  useEffect(() => {
+    if (id && !order) {
+      dispatch(loadOrderById(id))
+    }
+  }, [id, order, dispatch])
 
   if (!order) {
     return (
@@ -80,9 +89,7 @@ function OrderConfirmationPage() {
               </div>
               <div className="flex-1">
                 <p className="text-gray-900">{item.name}</p>
-                <p className="text-gray-500">
-                  {item.category} · Qty {item.quantity}
-                </p>
+                <p className="text-gray-500">Qty {item.quantity}</p>
               </div>
               <p className="text-gray-900 font-medium">{formatPrice(item.price * item.quantity)}</p>
             </div>

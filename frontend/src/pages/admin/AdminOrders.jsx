@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AdminLayout from "../../components/layout/AdminLayout";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
-import { selectOrderHistory, updateOrderStatus } from "../../features/order/orderSlice";
+import { selectOrderHistory, selectOrdersStatus, loadOrders, updateOrderStatus } from "../../features/order/orderSlice";
 
 const STATUSES = ["Processing", "Shipped", "Delivered", "Cancelled"];
 const STATUS_TONE = {
@@ -24,8 +24,13 @@ function formatDate(isoString) {
 export default function AdminOrders() {
   const dispatch = useDispatch();
   const orders = useSelector(selectOrderHistory);
+  const status = useSelector(selectOrdersStatus);
   const [statusFilter, setStatusFilter] = useState("All");
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    dispatch(loadOrders());
+  }, [dispatch]);
 
   const filtered = orders.filter(
     (o) =>
@@ -75,8 +80,6 @@ export default function AdminOrders() {
       </div>
 
       <Card style={{ padding: 0, marginTop: 20 }}>
-        {/* Scrolls horizontally on narrow screens instead of squeezing 7
-            columns unreadably thin or overflowing the page. */}
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", minWidth: 760, borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
@@ -89,7 +92,13 @@ export default function AdminOrders() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {status === "loading" ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: 20, textAlign: "center", color: "var(--color-gray)" }}>
+                    Loading orders...
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} style={{ padding: 20, textAlign: "center", color: "var(--color-gray)" }}>
                     No orders match.

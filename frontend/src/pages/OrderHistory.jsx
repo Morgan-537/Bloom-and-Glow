@@ -1,8 +1,9 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Layout from "../components/layout/Layout";
 import Badge from "../components/ui/Badge";
-import { selectOrderHistory } from "../features/order/orderSlice";
+import { selectOrderHistory, selectOrdersStatus, selectOrdersError, loadOrders } from "../features/order/orderSlice";
 
 const STATUS_TONE = {
   Processing: "pending",
@@ -20,7 +21,14 @@ function formatDate(isoString) {
 }
 
 export default function OrderHistory() {
+  const dispatch = useDispatch();
   const orders = useSelector(selectOrderHistory);
+  const status = useSelector(selectOrdersStatus);
+  const error = useSelector(selectOrdersError);
+
+  useEffect(() => {
+    dispatch(loadOrders());
+  }, [dispatch]);
 
   return (
     <Layout>
@@ -30,11 +38,21 @@ export default function OrderHistory() {
           Track and review your past purchases and invoices
         </p>
 
-        {orders.length === 0 ? (
+        {status === "loading" && (
+          <p style={{ color: "var(--color-gray)", marginTop: 32 }}>Loading your orders...</p>
+        )}
+
+        {status === "failed" && (
+          <p style={{ color: "var(--color-danger)", marginTop: 32 }}>{error}</p>
+        )}
+
+        {status === "succeeded" && orders.length === 0 && (
           <p style={{ color: "var(--color-gray)", marginTop: 32 }}>
             You haven't placed any orders yet. <Link to="/">Start shopping</Link>
           </p>
-        ) : (
+        )}
+
+        {status === "succeeded" && orders.length > 0 && (
           // Scrolls horizontally on narrow screens instead of forcing the
           // whole page wider or squeezing 6 columns unreadably thin.
           <div style={{ overflowX: "auto", marginTop: 32 }}>

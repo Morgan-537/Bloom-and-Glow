@@ -4,6 +4,8 @@ import { selectCartItems, selectSubtotal, selectDeliveryFee, selectCartTotal, cl
 import {
   selectDeliveryAddress,
   selectBillingInfo,
+  selectPlaceOrderStatus,
+  selectPlaceOrderError,
   setDeliveryAddress,
   setBillingInfo,
   placeOrder,
@@ -24,6 +26,8 @@ function CheckoutPage() {
 
   const deliveryAddress = useSelector(selectDeliveryAddress)
   const billingInfo = useSelector(selectBillingInfo)
+  const placeStatus = useSelector(selectPlaceOrderStatus)
+  const placeError = useSelector(selectPlaceOrderError)
 
   const handleAddressChange = (field) => (event) => {
     dispatch(setDeliveryAddress({ [field]: event.target.value }))
@@ -43,10 +47,12 @@ function CheckoutPage() {
     billingInfo.expiry &&
     billingInfo.cvv
 
-  const handlePlaceOrder = () => {
-    dispatch(placeOrder({ items, subtotal, deliveryFee, total, deliveryAddress, billingInfo }))
-    dispatch(clearCart())
-    navigate('/order-confirmation')
+  const handlePlaceOrder = async () => {
+    const result = await dispatch(placeOrder({ items, subtotal, deliveryFee, total, deliveryAddress, billingInfo }))
+    if (placeOrder.fulfilled.match(result)) {
+      dispatch(clearCart())
+      navigate('/order-confirmation')
+    }
   }
 
   return (
@@ -165,12 +171,13 @@ function CheckoutPage() {
             <span>Total</span>
             <span className="text-rose-600">{formatPrice(total)}</span>
           </div>
+          {placeError && <p className="text-sm text-red-600 mb-4">{placeError}</p>}
           <button
             onClick={handlePlaceOrder}
-            disabled={!isFormComplete}
+            disabled={!isFormComplete || placeStatus === 'loading'}
             className="w-full bg-rose-600 hover:bg-rose-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-md transition-colors"
           >
-            Place Order & Pay
+            {placeStatus === 'loading' ? 'Placing Order...' : 'Place Order & Pay'}
           </button>
         </div>
       </div>

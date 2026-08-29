@@ -12,7 +12,7 @@ import {
   selectUsersError,
 } from "../../features/admin/usersSlice";
 
-const ROLES = ["customer", "admin"];
+const ROLES = ["customer", "admin", "order_manager"];
 
 export default function AdminUsers() {
   const dispatch = useDispatch();
@@ -41,8 +41,6 @@ export default function AdminUsers() {
 
       {status === "succeeded" && (
         <Card style={{ padding: 0, marginTop: 24 }}>
-          {/* Scrolls horizontally on narrow screens instead of squeezing 5
-              columns unreadably thin or overflowing the page. */}
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", minWidth: 560, borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
