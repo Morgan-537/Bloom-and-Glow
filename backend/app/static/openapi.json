@@ -5,7 +5,8 @@
     "description": "Backend API for the Bloom & Glow beauty shop capstone project. Endpoints are grouped by the teammate who owns that section: Auth (Damaris), Products (Elvis), Orders (Timothy), Admin/Analytics/Reports (Morgan).",
     "version": "1.0.0"
   },
-  "servers": [
+    "servers": [
+    { "url": "https://bloom-and-glow-umy0.onrender.com", "description": "Production (Render)" },
     { "url": "http://127.0.0.1:5000", "description": "Local development" }
   ],
   "components": {
